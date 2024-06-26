@@ -9,6 +9,8 @@ flagImg.src = "flag.png"
 let x, y
 let condition = false
 let mines = []
+let uncovered = []
+let flagged = []
 let cell = 15
 let moves = 0
 let minesAround = 1
@@ -94,6 +96,7 @@ function onClick(e) {
   let yC = e.clientY - rect.top
   let xRound = Math.floor(xC / (width / cell)) * (width / cell)
   let yRound = Math.floor(yC / (width / cell)) * (width / cell)
+  uncovered.push({ x: xRound, y: yRound })
 
   if ((yRound / (width / cell) + xRound / (width / cell)) % 2 == 0)
     ctx.fillStyle = "#D7B899"
@@ -193,7 +196,6 @@ function createNumbers(x, y) {
       ctx.fillStyle = "black"
       break
   }
-  
 
   ctx.globalAlpha = 1
   ctx.font = "bold 28px Tahoma"
@@ -208,7 +210,21 @@ function createFlag(e) {
   let xRoundR = Math.floor(xR / (width / cell)) * (width / cell)
   let yRoundR = Math.floor(yR / (width / cell)) * (width / cell)
 
-  ctx.drawImage(flagImg, xRoundR, yRoundR, width / cell, width / cell)
+  if (!uncovered.some((e) => xRoundR == e.x && yRoundR == e.y)) {
+    ctx.drawImage(flagImg, xRoundR, yRoundR, width / cell, width / cell)
+
+    if (flagged.some((e) => xRoundR == e.x && yRoundR == e.y)) {
+      flagged.splice(flagged.indexOf({ x: xRoundR, y: yRoundR }), 1)
+
+      if ((yRoundR / (width / cell) + xRoundR / (width / cell)) % 2 == 0)
+        ctx.fillStyle = "#8ECC39"
+      else ctx.fillStyle = "#A7D948"
+
+      ctx.beginPath()
+      ctx.roundRect(xRoundR, yRoundR, width / cell, width / cell, 2)
+      ctx.fill()
+    } else flagged.push({ x: xRoundR, y: yRoundR })
+  }
 }
 
 c.addEventListener("click", (e) => {
