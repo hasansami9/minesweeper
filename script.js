@@ -13,7 +13,8 @@ let uncovered = []
 let flagged = []
 let cell = 15
 let moves = 0
-let minesAround = 1
+let minesAround
+let xF, yF
 
 ctx.strokeStyle = "black"
 ctx.globalAlpha = 1
@@ -98,19 +99,13 @@ function onClick(e) {
   let yRound = Math.floor(yC / (width / cell)) * (width / cell)
   uncovered.push({ x: xRound, y: yRound })
 
-  if ((yRound / (width / cell) + xRound / (width / cell)) % 2 == 0)
-    ctx.fillStyle = "#D7B899"
-  else ctx.fillStyle = "#e6ccb3"
+  uncover(xRound, yRound)
 
   if (moves == 1) {
     mines.push({ x: xRound, y: yRound })
     createRndMine(20)
     mines.shift() //removes first element (dummy)
   }
-
-  ctx.beginPath()
-  ctx.roundRect(xRound, yRound, width / cell, width / cell, 2)
-  ctx.fill()
 
   if (mines.some((e) => xRound == e.x && yRound == e.y)) {
     //if clicked on a cell with mine
@@ -119,46 +114,9 @@ function onClick(e) {
     // ctx.font = " bold 50px Arial";
     // ctx.fillText("OVER", width / 2, width / 2)
   } else {
-    if (mines.some((e) => xRound + width / cell == e.x && yRound == e.y)) {
-      minesAround++
-    }
-    if (mines.some((e) => xRound - width / cell == e.x && yRound == e.y)) {
-      minesAround++
-    }
-    if (mines.some((e) => yRound + width / cell == e.y && xRound == e.x)) {
-      minesAround++
-    }
-    if (mines.some((e) => yRound - width / cell == e.y && xRound == e.x)) {
-      minesAround++
-    }
-    if (
-      mines.some(
-        (e) => xRound + width / cell == e.x && yRound + width / cell == e.y
-      )
-    ) {
-      minesAround++
-    }
-    if (
-      mines.some(
-        (e) => xRound + width / cell == e.x && yRound - width / cell == e.y
-      )
-    ) {
-      minesAround++
-    }
-    if (
-      mines.some(
-        (e) => xRound - width / cell == e.x && yRound + width / cell == e.y
-      )
-    ) {
-      minesAround++
-    }
-    if (
-      mines.some(
-        (e) => xRound - width / cell == e.x && yRound - width / cell == e.y
-      )
-    ) {
-      minesAround++
-    }
+    // debugger
+    if (minesAround == 0) createHoleOfEmptyArea(xRound, xRound)
+    checkMineNum(xRound, yRound)
     createNumbers(xRound, yRound)
   }
   // drawGrid()
@@ -225,6 +183,55 @@ function createFlag(e) {
       ctx.fill()
     } else flagged.push({ x: xRoundR, y: yRoundR })
   }
+}
+
+function checkMineNum(x, y) {
+  minesAround = 0
+  if (mines.some((e) => x + width / cell == e.x && y == e.y)) {
+    minesAround++
+  }
+  if (mines.some((e) => x - width / cell == e.x && y == e.y)) {
+    minesAround++
+  }
+  if (mines.some((e) => y + width / cell == e.y && x == e.x)) {
+    minesAround++
+  }
+  if (mines.some((e) => y - width / cell == e.y && x == e.x)) {
+    minesAround++
+  }
+  if (mines.some((e) => x + width / cell == e.x && y + width / cell == e.y)) {
+    minesAround++
+  }
+  if (mines.some((e) => x + width / cell == e.x && y - width / cell == e.y)) {
+    minesAround++
+  }
+  if (mines.some((e) => x - width / cell == e.x && y + width / cell == e.y)) {
+    minesAround++
+  }
+  if (mines.some((e) => x - width / cell == e.x && y - width / cell == e.y)) {
+    minesAround++
+  }
+}
+
+function createHoleOfEmptyArea(x, y) {
+  //if (minesAround != 0 || x < 0 || y < 0 || x > width || y > height) return
+  debugger
+  xF = x
+  yF = y
+  checkMineNum(x, y)
+  while (minesAround == 0 && xF >= 0 && y <= 0 && x >= width && y >= height) {
+   
+  }
+}
+
+function uncover(x, y) {
+  if ((y / (width / cell) + x / (width / cell)) % 2 == 0)
+    ctx.fillStyle = "#D7B899"
+  else ctx.fillStyle = "#e6ccb3"
+
+  ctx.beginPath()
+  ctx.roundRect(x, y, width / cell, width / cell, 2)
+  ctx.fill()
 }
 
 c.addEventListener("click", (e) => {
