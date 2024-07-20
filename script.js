@@ -115,7 +115,7 @@ function onClick(e) {
     // ctx.fillText("OVER", width / 2, width / 2)
   } else {
     // debugger
-    if (minesAround == 0) createHoleOfEmptyArea(xRound, xRound)
+    if (minesAround == 0) createHoleOfEmptyArea(xRound, yRound)
     checkMineNum(xRound, yRound)
     createNumbers(xRound, yRound)
   }
@@ -215,12 +215,25 @@ function checkMineNum(x, y) {
 
 function createHoleOfEmptyArea(x, y) {
   //if (minesAround != 0 || x < 0 || y < 0 || x > width || y > height) return
-  debugger
   xF = x
   yF = y
-  checkMineNum(x, y)
-  while (minesAround == 0 && xF >= 0 && y <= 0 && x >= width && y >= height) {
-   
+  checkMineNum(xF, yF)
+  while (minesAround == 0 && xF >= 0 && yF >= 0 && xF <= width && yF <= height) {
+    while (minesAround == 0 && yF <= height && yF >= 0) {
+      uncover(xF, yF)
+
+      checkMineNum(xF, yF)
+      createNumbers(xF, yF)
+
+      yF = yF - width / cell
+    }
+    yF = y
+    uncover(xF, yF)
+
+    checkMineNum(xF, yF)
+    createNumbers(xF, yF)
+
+    xF = xF - width / cell
   }
 }
 
